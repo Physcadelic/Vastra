@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saree Brand Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2;--bg2:#f2ede4;--white:#fff;
+  --ink:#1c1814;--ink2:#4a3f35;--ink3:#9a8f82;--border:#e2d9ce;
+  --gold:#c8913a;--gold-lt:#f0d9a8;
+  --rose:#c95c5c;--teal:#3a8a82;--green:#4a9460;--purple:#7a5ca8;--blue:#3a5ca8;
+  --shadow:0 2px 16px rgba(0,0,0,.07);--shadow-lg:0 8px 40px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* NAV */
+nav{background:var(–ink);height:62px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;border-bottom:2px solid var(–gold);}
+.nav-brand{font-family:‘Cormorant Garamond’,serif;font-size:20px;font-weight:700;color:var(–gold-lt);letter-spacing:.5px;white-space:nowrap;}
+.nav-brand em{color:var(–gold);font-style:normal;}
+.nav-tabs{display:flex;gap:2px;}
+.nav-tab{padding:7px 14px;font-size:12px;font-weight:600;color:#aaa;background:transparent;border:none;cursor:pointer;border-radius:6px;transition:all .2s;font-family:‘DM Sans’,sans-serif;white-space:nowrap;}
+.nav-tab:hover{color:#fff;background:rgba(255,255,255,.08);}
+.nav-tab.active{background:var(–gold);color:var(–ink);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.sel-badge{background:rgba(200,145,58,.2);color:var(–gold-lt);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+.sub-count-badge{background:rgba(74,148,96,.2);color:#7fcf9a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+.exp-btn{background:transparent;border:1px solid var(–gold);color:var(–gold);padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:‘DM Sans’,sans-serif;transition:all .2s;}
+.exp-btn:hover{background:var(–gold);color:var(–ink);}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 62px);}
+
+/* LEFT */
+.catalogue{background:var(–white);border-right:1px solid var(–border);display:flex;flex-direction:column;max-height:calc(100vh - 62px);}
+.cat-hdr{padding:14px 16px 10px;border-bottom:1px solid var(–border);background:var(–white);flex-shrink:0;}
+.cat-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.cat-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(–ink3);font-weight:600;}
+.sel-btns{display:flex;gap:5px;}
+.sel-btn{font-size:11px;padding:3px 9px;border-radius:12px;border:1px solid var(–border);background:transparent;color:var(–ink3);cursor:pointer;font-family:‘DM Sans’,sans-serif;transition:all .2s;}
+.sel-btn:hover{border-color:var(–gold);color:var(–gold);}
+.chip-row{display:flex;gap:4px;flex-wrap:wrap;}
+.fchip{padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;border:1.5px solid var(–border);background:transparent;cursor:pointer;color:var(–ink3);transition:all .2s;font-family:‘DM Sans’,sans-serif;}
+.fchip:hover{border-color:var(–gold);color:var(–gold);}
+
+.cat-list-wrap{overflow-y:auto;flex:1;}
+.fab-hdr{padding:10px 16px;background:var(–bg2);border-bottom:1px solid var(–border);display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .15s;user-select:none;}
+.fab-hdr:hover{background:#ede6d9;}
+.fab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.fab-name{font-family:‘Cormorant Garamond’,serif;font-size:14px;font-weight:700;color:var(–ink);}
+.fab-meta{margin-left:auto;display:flex;align-items:center;gap:7px;}
+.fab-cnt{font-size:10px;color:var(–ink3);}
+.fab-sel{font-size:10px;font-weight:700;color:var(–gold);}
+.fab-arrow{font-size:10px;color:var(–ink3);transition:transform .2s;}
+.fab-arrow.open{transform:rotate(180deg);}
+
+.saree-item{display:flex;align-items:flex-start;gap:9px;padding:8px 16px;border-bottom:1px solid #f5f0e8;cursor:pointer;transition:background .15s;}
+.saree-item:hover{background:#fdf9f3;}
+.saree-item.checked{background:#fef9ec;}
+.saree-item.hidden{display:none;}
+.cbox{width:15px;height:15px;border-radius:4px;border:2px solid var(–border);background:transparent;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.saree-item.checked .cbox{background:var(–gold);border-color:var(–gold);}
+.cbox-tick{display:none;color:#fff;font-size:8px;font-weight:900;}
+.saree-item.checked .cbox-tick{display:block;}
+.s-body{flex:1;min-width:0;}
+.s-row1{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.s-no{font-size:10px;color:var(–ink3);font-weight:700;min-width:18px;}
+.s-design{font-size:12px;font-weight:600;color:var(–ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+.s-row2{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.s-price{font-size:11px;font-weight:700;color:var(–gold);}
+.s-trend{font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;}
+.t-top{background:rgba(74,148,96,.12);color:var(–green);}
+.t-good{background:rgba(200,145,58,.12);color:var(–gold);}
+.t-niche{background:rgba(201,92,92,.12);color:var(–rose);}
+.s-chan{font-size:10px;color:var(–ink3);}
+.s-row3{font-size:10px;color:var(–ink3);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* SUBMIT BAR */
+.submit-bar{padding:12px 16px;border-top:1px solid var(–border);background:var(–white);flex-shrink:0;}
+.submit-btn{width:100%;padding:12px;background:var(–ink);color:var(–gold-lt);border:none;border-radius:10px;font-family:‘Cormorant Garamond’,serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.35;pointer-events:none;}
+.submit-btn.active{opacity:1;pointer-events:all;}
+.submit-btn.active:hover{background:var(–gold);color:var(–ink);transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,145,58,.3);}
+.s-count{background:rgba(255,255,255,.15);padding:2px 8px;border-radius:10px;font-size:11px;font-family:‘DM Sans’,sans-serif;font-weight:700;}
+
+/* RIGHT PANEL */
+.dashboard{overflow-y:auto;max-height:calc(100vh - 62px);padding:24px 28px;}
+.dpanel{display:none;}
+.dpanel.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* KPIs */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:18px;}
+.kpi{background:var(–white);border-radius:11px;padding:14px;box-shadow:var(–shadow);border-top:3px solid transparent;transition:transform .2s;}
+.kpi:hover{transform:translateY(-2px);}
+.kpi.k1{border-color:var(–gold)}.kpi.k2{border-color:var(–teal)}.kpi.k3{border-color:var(–green)}.kpi.k4{border-color:var(–rose)}.kpi.k5{border-color:var(–purple)}
+.kpi-val{font-family:‘Cormorant Garamond’,serif;font-size:28px;font-weight:700;color:var(–ink);line-height:1;}
+.kpi-lbl{font-size:10px;color:var(–ink3);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.ccard{background:var(–white);border-radius:12px;padding:18px;box-shadow:var(–shadow);}
+.ccard.full{grid-column:span 2;}
+.cc-title{font-family:‘Cormorant Garamond’,serif;font-size:15px;font-weight:700;color:var(–ink);margin-bottom:2px;}
+.cc-sub{font-size:11px;color:var(–ink3);margin-bottom:12px;}
+
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:var(–ink3);text-align:center;}
+.empty-icon{font-size:52px;margin-bottom:16px;opacity:.4;}
+.empty-title{font-family:‘Cormorant Garamond’,serif;font-size:22px;font-weight:700;color:var(–ink2);margin-bottom:8px;}
+.empty-text{font-size:13px;line-height:1.6;}
+
+/* SUBMISSIONS PANEL */
+.subs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.subs-title{font-family:‘Cormorant Garamond’,serif;font-size:24px;font-weight:700;}
+.subs-meta{font-size:12px;color:var(–ink3);}
+.clear-subs-btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid var(–border);background:transparent;color:var(–ink3);cursor:pointer;font-family:‘DM Sans’,sans-serif;transition:all .2s;}
+.clear-subs-btn:hover{border-color:var(–rose);color:var(–rose);}
+
+/* SUBMISSION CARD */
+.sub-card{background:var(–white);border-radius:14px;box-shadow:var(–shadow);margin-bottom:20px;overflow:hidden;border:1px solid var(–border);}
+.sub-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(–border);background:var(–bg2);}
+.sub-card-left{display:flex;align-items:center;gap:12px;}
+.sub-num{width:32px;height:32px;border-radius:50%;background:var(–gold);color:var(–ink);font-family:‘Cormorant Garamond’,serif;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sub-info-title{font-family:‘Cormorant Garamond’,serif;font-size:15px;font-weight:700;color:var(–ink);}
+.sub-info-meta{font-size:11px;color:var(–ink3);margin-top:1px;}
+.sub-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.sub-pill{font-size:10px;padding:3px 9px;border-radius:10px;font-weight:700;}
+.pill-gold{background:rgba(200,145,58,.12);color:var(–gold);}
+.pill-green{background:rgba(74,148,96,.12);color:var(–green);}
+.pill-blue{background:rgba(58,92,168,.12);color:var(–blue);}
+.pill-rose{background:rgba(201,92,92,.12);color:var(–rose);}
+
+.sub-charts{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(–border);}
+.sub-chart-cell{padding:16px 18px;border-right:1px solid var(–border);}
+.sub-chart-cell:last-child{border-right:none;}
+.scc-title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(–ink3);font-weight:700;margin-bottom:12px;}
+
+/* MINI BAR CHART */
+.mini-bar-chart{display:flex;flex-direction:column;gap:5px;}
+.mb-row{display:flex;align-items:center;gap:6px;}
+.mb-lbl{font-size:9px;color:var(–ink2);width:72px;flex-shrink:0;text-align:right;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mb-track{flex:1;height:14px;background:var(–bg2);border-radius:3px;overflow:hidden;}
+.mb-fill{height:100%;border-radius:3px;transition:width .7s cubic-bezier(.4,0,.2,1);min-width:14px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;}
+.mb-fill span{font-size:8px;font-weight:700;color:rgba(255,255,255,.9);}
+
+/* MINI DONUT */
+.mini-donut-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.mini-legend{display:flex;flex-direction:column;gap:4px;width:100%;}
+.ml-row{display:flex;align-items:center;gap:5px;}
+.ml-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+.ml-lbl{font-size:9px;color:var(–ink2);flex:1;}
+.ml-val{font-size:10px;font-weight:700;color:var(–ink);}
+
+/* PRICE MINI */
+.price-mini{display:flex;flex-direction:column;gap:4px;}
+.pm-row{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:6px;background:var(–bg2);}
+.pm-lbl{font-size:9px;color:var(–ink2);font-weight:500;}
+.pm-val{font-size:10px;font-weight:700;color:var(–gold);}
+
+/* ITEMS LIST */
+.sub-items-preview{padding:12px 20px;border-top:1px solid var(–border);display:flex;flex-wrap:wrap;gap:5px;}
+.sub-item-tag{font-size:10px;background:var(–bg2);color:var(–ink2);padding:3px 9px;border-radius:8px;font-weight:500;}
+.sub-toggle{font-size:11px;color:var(–teal);cursor:pointer;background:none;border:none;font-family:‘DM Sans’,sans-serif;font-weight:600;padding:0;}
+.sub-toggle:hover{text-decoration:underline;}
+
+/* COMPARE ROW */
+.compare-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:14px;}
+.compare-cell{background:var(–white);border-radius:10px;padding:14px;box-shadow:var(–shadow);text-align:center;}
+.cc-num{font-size:11px;font-weight:700;color:var(–gold);margin-bottom:4px;}
+.cc-val{font-family:‘Cormorant Garamond’,serif;font-size:22px;font-weight:700;color:var(–ink);}
+.cc-lbl{font-size:10px;color:var(–ink3);margin-top:2px;}
+
+/* TABLE */
+.tbl-wrap{background:var(–white);border-radius:12px;box-shadow:var(–shadow);overflow:hidden;}
+.ctable{width:100%;border-collapse:collapse;}
+.ctable th{padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(–ink3);font-weight:700;background:var(–bg2);border-bottom:1px solid var(–border);text-align:left;}
+.ctable td{padding:9px 12px;font-size:12px;border-bottom:1px solid var(–bg);color:var(–ink2);vertical-align:middle;}
+.ctable tr:hover td{background:var(–bg);}
+.ctable tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.b-top{background:#d1fae5;color:#065f46}.b-good{background:#fef3c7;color:#92400e}.b-niche{background:#fee2e2;color:#991b1b}
+.b-insta{background:#ede9fe;color:#5b21b6}.b-wa{background:#dcfce7;color:#166534}.b-both{background:#e0f2fe;color:#075985}
+
+/* FILTER */
+.fp-grid{display:grid;grid-template-columns:240px 1fr;gap:16px;}
+.fp-sb{background:var(–white);border-radius:12px;padding:18px;box-shadow:var(–shadow);height:fit-content;position:sticky;top:0;}
+.fp-stitle{font-family:‘Cormorant Garamond’,serif;font-size:16px;font-weight:700;margin-bottom:14px;}
+.fp-grp{margin-bottom:14px;}
+.fp-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(–ink3);font-weight:700;margin-bottom:6px;}
+.fp-opts{display:flex;flex-direction:column;gap:2px;}
+.fp-opt{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:6px;cursor:pointer;transition:background .15s;}
+.fp-opt:hover{background:var(–bg);}
+.fp-opt input[type=checkbox]{accent-color:var(–gold);width:13px;height:13px;cursor:pointer;}
+.fp-opt-lbl{font-size:11px;color:var(–ink2);flex:1;}
+.fp-opt-cnt{font-size:9px;background:var(–bg2);color:var(–ink3);padding:1px 5px;border-radius:8px;font-weight:600;}
+.fp-clear{width:100%;padding:8px;background:transparent;color:var(–ink3);border:1px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:12px;cursor:pointer;margin-top:4px;transition:all .2s;}
+.fp-clear:hover{border-color:var(–ink2);color:var(–ink2);}
+
+/* EXPORT */
+.exp-wrap{max-width:660px;}
+.exp-title{font-family:‘Cormorant Garamond’,serif;font-size:24px;font-weight:700;margin-bottom:4px;}
+.exp-sub{font-size:12px;color:var(–ink3);margin-bottom:22px;}
+.exp-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+.exp-card{background:var(–white);border-radius:12px;padding:20px;box-shadow:var(–shadow);cursor:pointer;transition:all .2s;border:2px solid transparent;display:flex;gap:12px;align-items:flex-start;}
+.exp-card:hover{border-color:var(–gold);transform:translateY(-2px);box-shadow:var(–shadow-lg);}
+.exp-icon{font-size:28px;}
+.exp-info h3{font-family:‘Cormorant Garamond’,serif;font-size:15px;font-weight:700;margin-bottom:3px;}
+.exp-info p{font-size:11px;color:var(–ink3);line-height:1.5;}
+.exp-tag{display:inline-block;margin-top:6px;padding:2px 7px;background:var(–bg2);border-radius:8px;font-size:9px;font-weight:700;color:var(–ink2);letter-spacing:1px;text-transform:uppercase;}
+.exp-sum{background:var(–white);border-radius:12px;padding:22px;box-shadow:var(–shadow);}
+.exp-sum-title{font-family:‘Cormorant Garamond’,serif;font-size:16px;font-weight:700;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(–border);}
+.exp-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(–bg2);}
+.exp-key{font-size:12px;color:var(–ink3);}
+.exp-val{font-size:12px;font-weight:700;color:var(–ink);}
+.dl-btn{width:100%;padding:12px;background:var(–ink);color:#fff;border:none;border-radius:9px;font-family:‘Cormorant Garamond’,serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:16px;transition:all .2s;letter-spacing:.5px;}
+.dl-btn:hover{background:var(–gold);color:var(–ink);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(28,24,20,.72);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal-card{background:var(–white);border-radius:22px;padding:44px 40px;max-width:460px;width:90%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.2);transform:translateY(24px) scale(.96);transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.modal-card::before{content:’’;position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:var(–gold);opacity:.06;}
+.modal-card::after{content:’’;position:absolute;bottom:-70px;left:-40px;width:200px;height:200px;border-radius:50%;background:var(–teal);opacity:.05;}
+.modal-overlay.show .modal-card{transform:translateY(0) scale(1);}
+.modal-icon{font-size:58px;margin-bottom:16px;display:block;animation:bounce .6s .2s both;}
+@keyframes bounce{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.modal-title{font-family:‘Cormorant Garamond’,serif;font-size:28px;font-weight:700;color:var(–ink);margin-bottom:8px;}
+.modal-sub{font-size:13px;color:var(–ink3);line-height:1.6;margin-bottom:20px;}
+.modal-summary{background:var(–bg2);border-radius:11px;padding:14px 18px;margin-bottom:20px;text-align:left;}
+.ms-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(–border);}
+.ms-row:last-child{border-bottom:none;}
+.ms-key{font-size:12px;color:var(–ink3);}
+.ms-val{font-size:12px;font-weight:700;color:var(–ink);}
+.modal-hint{font-size:12px;color:var(–teal);font-weight:600;margin-bottom:14px;}
+.modal-close{width:100%;padding:12px;background:var(–ink);color:var(–gold-lt);border:none;border-radius:9px;font-family:‘Cormorant Garamond’,serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.modal-close:hover{background:var(–gold);color:var(–ink);}
+.modal-close2{width:100%;padding:9px;background:transparent;color:var(–ink3);border:1px solid var(–border);border-radius:9px;font-family:‘DM Sans’,sans-serif;font-size:12px;cursor:pointer;margin-top:7px;transition:all .2s;}
+.modal-close2:hover{border-color:var(–ink2);color:var(–ink2);}
+.confetti-dot{position:absolute;width:8px;height:8px;border-radius:50%;animation:confettifall 1.2s ease-out forwards;}
+@keyframes confettifall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(320px) rotate(720deg);opacity:0}}
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Drape<em>Studio</em> · Catalogue</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTab('overview',this)">📊 Overview</button>
+    <button class="nav-tab" onclick="goTab('submissions',this)">📈 Submissions</button>
+    <button class="nav-tab" onclick="goTab('catalogue',this)">📋 Catalogue</button>
+    <button class="nav-tab" onclick="goTab('filter',this)">🔍 Filter</button>
+    <button class="nav-tab" onclick="goTab('export',this)">📤 Export</button>
+  </div>
+  <div class="nav-right">
+    <span class="sel-badge" id="sel-badge">0 selected</span>
+    <span class="sub-count-badge" id="sub-count-badge">0 submissions</span>
+    <button class="exp-btn" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- LEFT: CATALOGUE -->
+
+  <div class="catalogue">
+    <div class="cat-hdr">
+      <div class="cat-hdr-top">
+        <span class="cat-title">42 Designs</span>
+        <div class="sel-btns">
+          <button class="sel-btn" onclick="selectAll()">All</button>
+          <button class="sel-btn" onclick="clearAll()">Clear</button>
+        </div>
+      </div>
+      <div class="chip-row" id="chip-row"></div>
+    </div>
+    <div class="cat-list-wrap" id="cat-list"></div>
+    <div class="submit-bar">
+      <button class="submit-btn" id="submit-btn" onclick="submitSelection()">
+        <span>✦ Submit Selection</span>
+        <span class="s-count" id="s-count">0 items</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT: DASHBOARD -->
+
+  <div class="dashboard">
+
+```
+<!-- OVERVIEW -->
+<div class="dpanel active" id="panel-overview">
+  <div class="kpi-strip" id="kpi-strip"></div>
+  <div class="cgrid" id="cgrid1"></div>
+  <div class="cgrid" id="cgrid2"></div>
+</div>
+
+<!-- SUBMISSIONS -->
+<div class="dpanel" id="panel-submissions">
+  <div class="subs-header">
+    <div>
+      <div class="subs-title">Submission History</div>
+      <div class="subs-meta" id="subs-meta">Each submission shows charts of the selected designs</div>
+    </div>
+    <button class="clear-subs-btn" onclick="clearSubmissions()">✕ Clear All</button>
+  </div>
+  <div id="subs-list"></div>
+</div>
+
+<!-- CATALOGUE TABLE -->
+<div class="dpanel" id="panel-catalogue">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700">Selected Catalogue</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">Checked items detail view</div>
+    </div>
+    <span id="cat-count" style="font-size:12px;color:var(--ink3)">0 items</span>
+  </div>
+  <div class="tbl-wrap">
+    <table class="ctable">
+      <thead><tr><th>#</th><th>Fabric</th><th>Design</th><th>Style</th><th>Colour</th><th>Price</th><th>Trend</th><th>Channel</th><th>Note</th></tr></thead>
+      <tbody id="cat-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div class="dpanel" id="panel-filter">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:4px">Filter & Explore</div>
+  <div style="font-size:12px;color:var(--ink3);margin-bottom:20px">Drill down by fabric, trend, channel & price</div>
+  <div class="fp-grid">
+    <div class="fp-sb">
+      <div class="fp-stitle">Filters</div>
+      <div class="fp-grp"><div class="fp-lbl">Fabric</div><div class="fp-opts" id="fp-fabric"></div></div>
+      <div class="fp-grp"><div class="fp-lbl">Trend</div><div class="fp-opts" id="fp-trend"></div></div>
+      <div class="fp-grp"><div class="fp-lbl">Channel</div><div class="fp-opts" id="fp-chan"></div></div>
+      <div class="fp-grp"><div class="fp-lbl">Price</div><div class="fp-opts" id="fp-price"></div></div>
+      <button class="fp-clear" onclick="clearFilters()">✕ Clear All</button>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700">Results</div>
+        <span id="fp-count" style="font-size:11px;color:var(--ink3)">Showing all</span>
+      </div>
+      <div class="tbl-wrap">
+        <table class="ctable">
+          <thead><tr><th>#</th><th>Fabric</th><th>Design</th><th>Price</th><th>Trend</th><th>Channel</th><th>Note</th></tr></thead>
+          <tbody id="fp-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="dpanel" id="panel-export">
+  <div class="exp-wrap">
+    <div class="exp-title">Export Catalogue</div>
+    <div class="exp-sub">Download your saree shortlist in multiple formats</div>
+    <div class="exp-cards">
+      <div class="exp-card" onclick="exportCSV()"><div class="exp-icon">📄</div><div class="exp-info"><h3>Full CSV</h3><p>All 42 designs as spreadsheet.</p><div class="exp-tag">CSV</div></div></div>
+      <div class="exp-card" onclick="exportJSON()"><div class="exp-icon">🗂️</div><div class="exp-info"><h3>JSON Export</h3><p>Structured data for integrations.</p><div class="exp-tag">JSON</div></div></div>
+      <div class="exp-card" onclick="exportSelected()"><div class="exp-icon">✅</div><div class="exp-info"><h3>Export Selected</h3><p>Only checked items in CSV.</p><div class="exp-tag">CSV</div></div></div>
+      <div class="exp-card" onclick="window.print()"><div class="exp-icon">🖨️</div><div class="exp-info"><h3>Print / PDF</h3><p>Print via browser dialog.</p><div class="exp-tag">PDF</div></div></div>
+    </div>
+    <div class="exp-sum">
+      <div class="exp-sum-title">📋 Live Summary</div>
+      <div class="exp-row"><span class="exp-key">Total Designs</span><span class="exp-val">42</span></div>
+      <div class="exp-row"><span class="exp-key">Checked Items</span><span class="exp-val" id="ex-sel">0</span></div>
+      <div class="exp-row"><span class="exp-key">Total Submissions</span><span class="exp-val" id="ex-subs">0</span></div>
+      <div class="exp-row"><span class="exp-key">Avg Price (Checked)</span><span class="exp-val" id="ex-avg">—</span></div>
+      <div class="exp-row"><span class="exp-key">Top Fabric</span><span class="exp-val" id="ex-fab">—</span></div>
+      <div class="exp-row"><span class="exp-key">Insta DM Fit</span><span class="exp-val" id="ex-insta">—</span></div>
+      <div class="exp-row"><span class="exp-key">WhatsApp Fit</span><span class="exp-val" id="ex-wa">—</span></div>
+      <button class="dl-btn" onclick="exportCSV()">⬇ Download Full Catalogue (CSV)</button>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card" id="modal-card">
+    <span class="modal-icon">🎉</span>
+    <div class="modal-title">Thank You!</div>
+    <div class="modal-sub">Your selection has been submitted and charts have been updated in the dashboard.</div>
+    <div class="modal-summary" id="modal-summary"></div>
+    <div class="modal-hint">📈 View your submission charts in the Submissions tab</div>
+    <button class="modal-close" onclick="closeModal('submissions')">View Submission Charts →</button>
+    <button class="modal-close2" onclick="closeModal(null)">Back to Dashboard</button>
+  </div>
+</div>
+
+<script>
+const FC={"Organza":"#c8913a","Georgette":"#3a8a82","Cotton":"#4a9460","Linen Cotton":"#7a5ca8","Crepe":"#c95c5c","Cotton Silk":"#3a5ca8"};
+
+const DATA=[
+  {id:1,fabric:"Organza",design:"Pastel floral digital print",style:"Nivi drape",colour:"Lavender & Mint",price:1299,trend:"Top Trend",channel:"Insta DM",note:"Best opener — shoot this first for reels"},
+  {id:2,fabric:"Organza",design:"Pastel abstract brushstroke",style:"Nivi drape",colour:"Peach & Sage",price:1299,trend:"Top Trend",channel:"Insta DM",note:"Aesthetic crowd favourite — easy viral potential"},
+  {id:3,fabric:"Organza",design:"Solid with thin zari border",style:"Nivi drape",colour:"Ivory / Blush",price:1199,trend:"Top Trend",channel:"Both",note:"Safe bestseller — never goes unsold"},
+  {id:4,fabric:"Organza",design:"Kalamkari-inspired floral",style:"Nivi / Bengali",colour:"Mustard & Teal",price:1399,trend:"Good",channel:"Insta DM",note:"Story-driven — pair with craft narrative content"},
+  {id:5,fabric:"Organza",design:"Ombre dip-dye shaded",style:"Gujarati / Nivi",colour:"Pink to Peach",price:1399,trend:"Top Trend",channel:"Insta DM",note:"Photogenic — works only if shoot quality is good"},
+  {id:6,fabric:"Organza",design:"Floral border, plain body",style:"Nivi drape",colour:"White & Rose Gold",price:1249,trend:"Good",channel:"Insta DM",note:"Elegant — urban buyer segment"},
+  {id:7,fabric:"Organza",design:"Polka dot minimal print",style:"Nivi drape",colour:"Black & Cream",price:1199,trend:"Good",channel:"Both",note:"Retro-minimal crossover — decent mover"},
+  {id:8,fabric:"Organza",design:"Embroidered pallu, plain body",style:"Nivi drape",colour:"Champagne & Silver",price:1499,trend:"Good",channel:"Insta DM",note:"Highest price — confirm cost stays under 700 first"},
+  {id:9,fabric:"Organza",design:"Subtle geometric ikat print",style:"Nivi drape",colour:"Rust & Off-white",price:1299,trend:"Good",channel:"Both",note:"Steady mid-segment — won't go viral but will sell"},
+  {id:10,fabric:"Georgette",design:"All-over floral print",style:"Nivi drape",colour:"Red & Navy",price:1099,trend:"Top Trend",channel:"WhatsApp",note:"Best WhatsApp mover — Tier 2/3 festive staple"},
+  {id:11,fabric:"Georgette",design:"Bandhani pattern print",style:"Rajasthani / Nivi",colour:"Pink & Orange",price:1149,trend:"Top Trend",channel:"Both",note:"Mass + Instagram both — high volume potential"},
+  {id:12,fabric:"Georgette",design:"Abstract watercolour print",style:"Nivi drape",colour:"Teal & Coral",price:1199,trend:"Good",channel:"Insta DM",note:"Urban buyer — needs good styling in shoot"},
+  {id:13,fabric:"Georgette",design:"Block print ethnic",style:"Nivi drape",colour:"Indigo & Beige",price:1149,trend:"Good",channel:"Both",note:"Consistent seller — craft story works well here"},
+  {id:14,fabric:"Georgette",design:"Sequin border work",style:"Nivi drape",colour:"Black & Gold",price:1499,trend:"Good",channel:"Both",note:"Festive — confirm sourcing cost before buying"},
+  {id:15,fabric:"Georgette",design:"Paisley all-over print",style:"Nivi drape",colour:"Maroon & Gold",price:1199,trend:"Good",channel:"WhatsApp",note:"Traditional buyer — WhatsApp reseller favourite"},
+  {id:16,fabric:"Georgette",design:"Solid with zari work",style:"Butterfly / Nivi",colour:"Bottle Green",price:1249,trend:"Good",channel:"Both",note:"Evergreen — safe but not exciting"},
+  {id:17,fabric:"Cotton",design:"POCKET SAREE — Kalamkari print",style:"Nivi drape",colour:"Earthy Brown & Red",price:1149,trend:"Top Trend",channel:"Both",note:"NEW: Pocket is USP — push hard on reels"},
+  {id:18,fabric:"Cotton",design:"POCKET SAREE — Ikat woven pattern",style:"Nivi drape",colour:"Blue & White",price:1099,trend:"Top Trend",channel:"Both",note:"NEW: Functional angle — great demo content hook"},
+  {id:19,fabric:"Cotton",design:"POCKET SAREE — Solid plain bright",style:"Nivi drape",colour:"Yellow / Red",price:999,trend:"Top Trend",channel:"WhatsApp",note:"NEW: Price hero — easiest first sale for resellers"},
+  {id:20,fabric:"Cotton",design:"Block print geometric",style:"Nivi drape",colour:"Mustard & Black",price:1099,trend:"Good",channel:"WhatsApp",note:"Tier 2/3 steady seller — safe stock"},
+  {id:21,fabric:"Cotton",design:"Solid handloom weave",style:"Nivi drape",colour:"Bright Yellow",price:999,trend:"Good",channel:"WhatsApp",note:"Entry price — drives volume not margin"},
+  {id:22,fabric:"Cotton",design:"Floral block print",style:"Nivi drape",colour:"Red & Green",price:1099,trend:"Good",channel:"Both",note:"Festive cotton — works for Pongal/Ugadi season"},
+  {id:23,fabric:"Linen Cotton",design:"Solid minimal plain",style:"Nivi drape",colour:"Earthy Olive / Nude",price:1199,trend:"Good",channel:"Insta DM",note:"Urban working woman — needs clean minimal shoot"},
+  {id:24,fabric:"Linen Cotton",design:"Subtle stripe woven",style:"Nivi drape",colour:"Beige & Brown",price:1149,trend:"Good",channel:"Insta DM",note:"Office-wear angle — niche but loyal repeat buyers"},
+  {id:25,fabric:"Linen Cotton",design:"Zari border solid",style:"Nivi drape",colour:"Off-white & Gold",price:1299,trend:"Good",channel:"Both",note:"Premium feel at mid price — good value perception"},
+  {id:26,fabric:"Linen Cotton",design:"Digital floral print",style:"Nivi drape",colour:"Pastel Peach",price:1249,trend:"Good",channel:"Insta DM",note:"Pairs well with organza pastel angle"},
+  {id:27,fabric:"Linen Cotton",design:"Natural texture plain",style:"Bengali / Nivi",colour:"Natural Beige",price:1149,trend:"Niche",channel:"Insta DM",note:"Sustainable angle — only works if you build that story"},
+  {id:28,fabric:"Crepe",design:"RETRO STYLE — Bold vintage floral",style:"Nivi drape",colour:"Burnt Orange & Brown",price:1249,trend:"Good",channel:"Insta DM",note:"NEW: 70s retro — niche Instagram"},
+  {id:29,fabric:"Crepe",design:"RETRO STYLE — High-contrast stripe",style:"Butterfly / Nivi",colour:"Black & White",price:1199,trend:"Good",channel:"Insta DM",note:"NEW: Strong visual — content must do heavy lifting"},
+  {id:30,fabric:"Crepe",design:"SAREE-CUM-DRESS — Prestitched",style:"Pre-stitched ready",colour:"Dusty Pink",price:1499,trend:"Niche",channel:"Insta DM",note:"NEW: Crowded on Meesho. Brand hard or skip"},
+  {id:31,fabric:"Crepe",design:"SAREE-CUM-DRESS — Fusion drape",style:"Pre-stitched ready",colour:"Navy & White",price:1499,trend:"Niche",channel:"Insta DM",note:"NEW: Gen Z appeal — needs influencer push"},
+  {id:32,fabric:"Crepe",design:"Solid self-textured",style:"Nivi drape",colour:"Wine / Deep Plum",price:1199,trend:"Good",channel:"Both",note:"Reliable steady seller — no surprises"},
+  {id:33,fabric:"Crepe",design:"Abstract digital print",style:"Nivi drape",colour:"Grey & Pink",price:1149,trend:"Good",channel:"Both",note:"Safe mid-market pick — moderate volume"},
+  {id:34,fabric:"Crepe",design:"Half-half colour block",style:"Butterfly / Nivi",colour:"Peach & Lavender",price:1299,trend:"Good",channel:"Insta DM",note:"Aesthetic — works as Instagram content prop"},
+  {id:35,fabric:"Crepe",design:"Bandhani printed",style:"Nivi drape",colour:"Turquoise & Pink",price:1149,trend:"Good",channel:"WhatsApp",note:"Mass appeal Bandhani — steady WhatsApp mover"},
+  {id:36,fabric:"Cotton Silk",design:"Kanjivaram-inspired border",style:"Nivi drape",colour:"Red & Gold",price:1499,trend:"Top Trend",channel:"Both",note:"Premium anchor — feature in every shoot"},
+  {id:37,fabric:"Cotton Silk",design:"Pochampally ikat weave",style:"Nivi drape",colour:"Blue & Orange",price:1399,trend:"Top Trend",channel:"Both",note:"Hyderabad craft story — differentiates you"},
+  {id:38,fabric:"Cotton Silk",design:"Solid with rich zari work",style:"Nivi drape",colour:"Royal Blue",price:1499,trend:"Good",channel:"Both",note:"Festive staple — always sells around occasions"},
+  {id:39,fabric:"Cotton Silk",design:"Temple border traditional",style:"Bengali / Nivi",colour:"Green & Gold",price:1449,trend:"Good",channel:"WhatsApp",note:"Traditional buyer — gift purchase segment"},
+  {id:40,fabric:"Cotton Silk",design:"Printed ethnic motif",style:"Nivi drape",colour:"Magenta & Silver",price:1399,trend:"Good",channel:"Both",note:"Versatile — festive + daily cross segment"},
+  {id:41,fabric:"Cotton Silk",design:"Dual tone woven",style:"Nivi drape",colour:"Purple & Cream",price:1349,trend:"Good",channel:"Insta DM",note:"Urban premium — consistent Insta performer"},
+  {id:42,fabric:"Cotton Silk",design:"Minimal solid festive",style:"Nivi drape",colour:"Champagne",price:1299,trend:"Good",channel:"Both",note:"Safe buy — broad appeal across both channels"},
+];
+
+let checked=new Set();
+let chipActive=null;
+let submissions=[];
+
+// ======================== BUILD LEFT ========================
+function buildLeft(){
+  const fabs=[...new Set(DATA.map(s=>s.fabric))];
+  document.getElementById('chip-row').innerHTML=fabs.map(f=>
+    `<button class="fchip" onclick="chipClick(this,'${f}')">${f}</button>`).join('');
+  const list=document.getElementById('cat-list');
+  list.innerHTML='';
+  fabs.forEach(fab=>{
+    const items=DATA.filter(s=>s.fabric===fab);
+    const g=document.createElement('div');
+    g.innerHTML=`
+      <div class="fab-hdr" onclick="toggleGroup('${fab.replace(/\s/g,'_')}')">
+        <div class="fab-dot" style="background:${FC[fab]}"></div>
+        <div class="fab-name">${fab}</div>
+        <div class="fab-meta">
+          <span class="fab-cnt">${items.length}</span>
+          <span class="fab-sel" id="fsel-${fab.replace(/\s/g,'_')}"></span>
+          <span class="fab-arrow open" id="farr-${fab.replace(/\s/g,'_')}">▼</span>
+        </div>
+      </div>
+      <div id="fitems-${fab.replace(/\s/g,'_')}">
+        ${items.map(s=>`
+          <div class="saree-item" id="si-${s.id}" onclick="toggle(${s.id})">
+            <div class="cbox"><span class="cbox-tick">✓</span></div>
+            <div class="s-body">
+              <div class="s-row1">
+                <span class="s-no">${String(s.id).padStart(2,'0')}</span>
+                <span class="s-design" title="${s.design}">${s.design}</span>
+              </div>
+              <div class="s-row2">
+                <span class="s-price">₹${s.price.toLocaleString()}</span>
+                <span class="s-trend ${s.trend==='Top Trend'?'t-top':s.trend==='Good'?'t-good':'t-niche'}">${s.trend}</span>
+                <span class="s-chan">${s.channel}</span>
+              </div>
+              <div class="s-row3">${s.colour} · ${s.note}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    list.appendChild(g);
+  });
+}
+
+function toggleGroup(k){
+  const el=document.getElementById('fitems-'+k);
+  const arr=document.getElementById('farr-'+k);
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  arr.classList.toggle('open',!open);
+}
+
+function chipClick(el,fab){
+  if(chipActive===fab){
+    chipActive=null;el.style.background='';el.style.color='';el.style.borderColor='';
+    DATA.forEach(s=>{const e=document.getElementById('si-'+s.id);if(e)e.classList.remove('hidden');});
+  } else {
+    chipActive=fab;
+    document.querySelectorAll('.fchip').forEach(c=>{c.style.background='';c.style.color='';c.style.borderColor='';});
+    el.style.background=FC[fab];el.style.color='#fff';el.style.borderColor=FC[fab];
+    DATA.forEach(s=>{const e=document.getElementById('si-'+s.id);if(e)e.classList.toggle('hidden',s.fabric!==fab);});
+  }
+}
+
+// ======================== CHECKBOX ========================
+function toggle(id){
+  checked.has(id)?checked.delete(id):checked.add(id);
+  document.getElementById('si-'+id).classList.toggle('checked',checked.has(id));
+  updateFabSel();updateBadge();refreshOverview();
+}
+function selectAll(){DATA.forEach(s=>{checked.add(s.id);document.getElementById('si-'+s.id).classList.add('checked');});updateFabSel();updateBadge();refreshOverview();}
+function clearAll(){checked.clear();document.querySelectorAll('.saree-item').forEach(e=>e.classList.remove('checked'));updateFabSel();updateBadge();refreshOverview();}
+
+function updateFabSel(){
+  [...new Set(DATA.map(s=>s.fabric))].forEach(f=>{
+    const k=f.replace(/\s/g,'_');
+    const n=DATA.filter(s=>s.fabric===f&&checked.has(s.id)).length;
+    const el=document.getElementById('fsel-'+k);if(el)el.textContent=n>0?n+' ✓':'';
+  });
+}
+function updateBadge(){
+  const n=checked.size;
+  document.getElementById('sel-badge').textContent=n+' selected';
+  document.getElementById('s-count').textContent=n+' item'+(n!==1?'s':'');
+  const btn=document.getElementById('submit-btn');
+  n>0?btn.classList.add('active'):btn.classList.remove('active');
+}
+
+// ======================== OVERVIEW CHARTS ========================
+function refreshOverview(){
+  const sel=checked.size>0?DATA.filter(s=>checked.has(s.id)):DATA;
+  renderKPIs(sel);renderGrid1(sel);renderGrid2(sel);renderCatTable(sel);updateExportPanel(sel);
+}
+
+function renderKPIs(sel){
+  const avg=sel.length?Math.round(sel.reduce((a,s)=>a+s.price,0)/sel.length):0;
+  const top=sel.filter(s=>s.trend==='Top Trend').length;
+  const insta=sel.filter(s=>s.channel==='Insta DM'||s.channel==='Both').length;
+  const fabs=[...new Set(sel.map(s=>s.fabric))].length;
+  document.getElementById('kpi-strip').innerHTML=`
+    <div class="kpi k1"><div class="kpi-val">${sel.length}</div><div class="kpi-lbl">Designs</div></div>
+    <div class="kpi k2"><div class="kpi-val">₹${avg.toLocaleString()}</div><div class="kpi-lbl">Avg Price</div></div>
+    <div class="kpi k3"><div class="kpi-val">${top}</div><div class="kpi-lbl">Top Trend</div></div>
+    <div class="kpi k4"><div class="kpi-val">${insta}</div><div class="kpi-lbl">Insta Fit</div></div>
+    <div class="kpi k5"><div class="kpi-val">${fabs}</div><div class="kpi-lbl">Fabrics</div></div>`;
+}
+
+function barChart(data,colorFn){
+  const max=Math.max(...data.map(d=>d.v),1);
+  return `<div class="bar-chart" style="display:flex;flex-direction:column;gap:8px">${data.map(d=>`
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="font-size:11px;color:var(--ink2);width:105px;flex-shrink:0;text-align:right;font-weight:500">${d.l}</div>
+      <div style="flex:1;height:22px;background:var(--bg2);border-radius:5px;overflow:hidden">
+        <div style="width:${(d.v/max*100)}%;height:100%;border-radius:5px;background:${colorFn(d.l)};display:flex;align-items:center;padding:0 7px;font-size:11px;font-weight:700;color:#fff;min-width:22px;transition:width .7s">${d.v||''}</div>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);width:20px;text-align:right">${d.v}</div>
+    </div>`).join('')}</div>`;
+}
+
+function donut(segs,tot){
+  const r=52,cx=62,cy=62,sw=18,circ=2*Math.PI*r;
+  let off=0,paths='';
+  segs.forEach(s=>{
+    const d=(tot>0?s.v/tot:0)*circ;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${sw}" stroke-dasharray="${d} ${circ}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dasharray .7s"/>`;
+    off+=d;
+  });
+  return `<svg width="124" height="124" viewBox="0 0 124 124">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#f2ede4" stroke-width="${sw}"/>
+    ${paths}
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="20" font-weight="700" fill="#1c1814" font-family="Cormorant Garamond,serif">${tot}</text>
+    <text x="${cx}" y="${cy+13}" text-anchor="middle" font-size="9" fill="#9a8f82" font-family="DM Sans,sans-serif">total</text>
+  </svg>`;
+}
+
+function renderGrid1(sel){
+  const fabs=["Organza","Georgette","Cotton","Linen Cotton","Crepe","Cotton Silk"];
+  const fabData=fabs.map(f=>({l:f,v:sel.filter(s=>s.fabric===f).length}));
+  const inO=sel.filter(s=>s.channel==='Insta DM').length;
+  const waO=sel.filter(s=>s.channel==='WhatsApp').length;
+  const bo=sel.filter(s=>s.channel==='Both').length;
+  const tot=sel.length||1;
+  const chanSegs=[{l:'Insta DM',v:inO,c:'#7a5ca8'},{l:'WhatsApp',v:waO,c:'#4a9460'},{l:'Both',v:bo,c:'#3a5ca8'}];
+  document.getElementById('cgrid1').innerHTML=`
+    <div class="ccard"><div class="cc-title">Fabric Distribution</div><div class="cc-sub">Designs per fabric in selection</div>${barChart(fabData,l=>FC[l]||'#c8913a')}</div>
+    <div class="ccard">
+      <div class="cc-title">Channel Fit</div><div class="cc-sub">Where each design performs best</div>
+      <div style="display:flex;align-items:center;gap:16px;justify-content:center">
+        ${donut(chanSegs,tot)}
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${chanSegs.map(s=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:9px;height:9px;border-radius:3px;background:${s.c};flex-shrink:0"></div><div style="font-size:12px;color:var(--ink2);flex:1">${s.l}</div><div style="font-size:13px;font-weight:700;color:var(--ink)">${s.v}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderGrid2(sel){
+  const tC={"Top Trend":"#4a9460","Good":"#c8913a","Niche":"#c95c5c"};
+  const trendData=[{l:"Top Trend",v:sel.filter(s=>s.trend==='Top Trend').length},{l:"Good",v:sel.filter(s=>s.trend==='Good').length},{l:"Niche",v:sel.filter(s=>s.trend==='Niche').length}];
+  const brackets=[
+    {l:"₹999",v:sel.filter(s=>s.price===999).length},
+    {l:"₹1,099",v:sel.filter(s=>s.price===1099).length},
+    {l:"₹1,149",v:sel.filter(s=>s.price===1149).length},
+    {l:"₹1,199",v:sel.filter(s=>s.price===1199).length},
+    {l:"₹1,249",v:sel.filter(s=>s.price===1249).length},
+    {l:"₹1,299",v:sel.filter(s=>s.price===1299).length},
+    {l:"₹1,349+",v:sel.filter(s=>s.price>=1349).length},
+  ];
+  document.getElementById('cgrid2').innerHTML=`
+    <div class="ccard"><div class="cc-title">Trend Score</div><div class="cc-sub">Top Trend vs Good vs Niche</div>${barChart(trendData,l=>tC[l])}</div>
+    <div class="ccard"><div class="cc-title">Price Distribution</div><div class="cc-sub">Designs per price point</div>${barChart(brackets,()=>'#3a5ca8')}</div>`;
+}
+
+// ======================== CATALOGUE TABLE ========================
+function renderCatTable(sel){
+  document.getElementById('cat-count').textContent=`${sel.length} items`;
+  const tb=t=>`<span class="badge ${t==='Top Trend'?'b-top':t==='Good'?'b-good':'b-niche'}">${t}</span>`;
+  const cb=c=>`<span class="badge ${c==='Insta DM'?'b-insta':c==='WhatsApp'?'b-wa':'b-both'}">${c}</span>`;
+  document.getElementById('cat-tbody').innerHTML=sel.length
+    ?sel.map(s=>`<tr><td>${s.id}</td><td><strong style="color:${FC[s.fabric]}">${s.fabric}</strong></td><td>${s.design}</td><td style="font-size:11px;color:var(--ink3)">${s.style}</td><td style="font-size:11px">${s.colour}</td><td><strong>₹${s.price.toLocaleString()}</strong></td><td>${tb(s.trend)}</td><td>${cb(s.channel)}</td><td style="font-size:11px;color:var(--ink3);max-width:140px">${s.note}</td></tr>`).join('')
+    :`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink3)">Check items from the left panel.</td></tr>`;
+}
+
+// ======================== SUBMISSIONS ========================
+function submitSelection(){
+  if(!checked.size) return;
+  const sel=DATA.filter(s=>checked.has(s.id));
+  const ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const avg=Math.round(sel.reduce((a,s)=>a+s.price,0)/sel.length);
+  const top=sel.filter(s=>s.trend==='Top Trend').length;
+  const insta=sel.filter(s=>s.channel==='Insta DM'||s.channel==='Both').length;
+  const wa=sel.filter(s=>s.channel==='WhatsApp'||s.channel==='Both').length;
+  const fc={};sel.forEach(s=>fc[s.fabric]=(fc[s.fabric]||0)+1);
+  const topFab=Object.entries(fc).sort((a,b)=>b[1]-a[1])[0];
+
+  // Store submission
+  submissions.push({
+    id:submissions.length+1,
+    ts,
+    items:[...sel],
+    avg,top,insta,wa,fc,
+    topFab:topFab?topFab[0]:'-'
+  });
+
+  // Update sub count badge
+  document.getElementById('sub-count-badge').textContent=`${submissions.length} submission${submissions.length!==1?'s':''}`;
+  document.getElementById('ex-subs').textContent=submissions.length;
+
+  // Show modal
+  document.getElementById('modal-summary').innerHTML=`
+    <div class="ms-row"><span class="ms-key">Submission #</span><span class="ms-val">${submissions.length}</span></div>
+    <div class="ms-row"><span class="ms-key">Total Designs</span><span class="ms-val">${sel.length}</span></div>
+    <div class="ms-row"><span class="ms-key">Avg Price</span><span class="ms-val">₹${avg.toLocaleString()}</span></div>
+    <div class="ms-row"><span class="ms-key">Top Trend Items</span><span class="ms-val">${top}</span></div>
+    <div class="ms-row"><span class="ms-key">Insta DM Fit</span><span class="ms-val">${insta}</span></div>
+    <div class="ms-row"><span class="ms-key">WhatsApp Fit</span><span class="ms-val">${wa}</span></div>
+    <div class="ms-row"><span class="ms-key">Top Fabric</span><span class="ms-val">${topFab?topFab[0]:'-'}</span></div>`;
+
+  document.getElementById('modal-overlay').classList.add('show');
+  spawnConfetti();
+  renderSubmissionsPanel();
+}
+
+function renderSubmissionsPanel(){
+  const list=document.getElementById('subs-list');
+  document.getElementById('subs-meta').textContent=`${submissions.length} submission${submissions.length!==1?'s':(', ')}. Charts update with each response.`;
+
+  if(!submissions.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No Submissions Yet</div><div class="empty-text">Select designs from the left panel and click<br><strong>Submit Selection</strong> to see charts here.</div></div>`;
+    return;
+  }
+
+  list.innerHTML='';
+
+  // Overall comparison if > 1 submission
+  if(submissions.length>1){
+    const compDiv=document.createElement('div');
+    compDiv.innerHTML=`
+      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;margin-bottom:10px;color:var(--ink)">📊 All Submissions Comparison</div>
+      <div class="compare-row">
+        ${submissions.map(sub=>`
+          <div class="compare-cell">
+            <div class="cc-num">Sub #${sub.id}</div>
+            <div class="cc-val">${sub.items.length}</div>
+            <div class="cc-lbl">designs · ₹${sub.avg.toLocaleString()} avg</div>
+            <div style="margin-top:6px;font-size:10px;color:var(--green);font-weight:700">${sub.top} Top Trend</div>
+          </div>`).join('')}
+      </div>`;
+    list.appendChild(compDiv);
+  }
+
+  // Individual submission cards (most recent first)
+  [...submissions].reverse().forEach(sub=>{
+    const card=document.createElement('div');
+    card.className='sub-card';
+
+    const fabs=["Organza","Georgette","Cotton","Linen Cotton","Crepe","Cotton Silk"];
+    const fabData=fabs.map(f=>({l:f,v:sub.items.filter(s=>s.fabric===f).length})).filter(d=>d.v>0);
+    const trendData=[
+      {l:"Top Trend",v:sub.items.filter(s=>s.trend==='Top Trend').length,c:'#4a9460'},
+      {l:"Good",v:sub.items.filter(s=>s.trend==='Good').length,c:'#c8913a'},
+      {l:"Niche",v:sub.items.filter(s=>s.trend==='Niche').length,c:'#c95c5c'},
+    ].filter(d=>d.v>0);
+    const inO=sub.items.filter(s=>s.channel==='Insta DM').length;
+    const waO=sub.items.filter(s=>s.channel==='WhatsApp').length;
+    const boO=sub.items.filter(s=>s.channel==='Both').length;
+    const chanSegs=[{l:'Insta DM',v:inO,c:'#7a5ca8'},{l:'WhatsApp',v:waO,c:'#4a9460'},{l:'Both',v:boO,c:'#3a5ca8'}].filter(d=>d.v>0);
+    const brackets=[
+      {l:"₹999",v:sub.items.filter(s=>s.price===999).length},
+      {l:"₹1,099",v:sub.items.filter(s=>s.price===1099).length},
+      {l:"₹1,149",v:sub.items.filter(s=>s.price===1149).length},
+      {l:"₹1,199",v:sub.items.filter(s=>s.price===1199).length},
+      {l:"₹1,249",v:sub.items.filter(s=>s.price===1249).length},
+      {l:"₹1,299",v:sub.items.filter(s=>s.price===1299).length},
+      {l:"₹1,349+",v:sub.items.filter(s=>s.price>=1349).length},
+    ].filter(d=>d.v>0);
+
+    const maxFab=Math.max(...fabData.map(d=>d.v),1);
+    const maxTrend=Math.max(...trendData.map(d=>d.v),1);
+    const maxBracket=Math.max(...brackets.map(d=>d.v),1);
+    const donutTot=sub.items.length||1;
+
+    card.innerHTML=`
+      <div class="sub-card-hdr">
+        <div class="sub-card-left">
+          <div class="sub-num">${sub.id}</div>
+          <div>
+            <div class="sub-info-title">Submission #${sub.id} · ${sub.ts}</div>
+            <div class="sub-info-meta">${sub.items.length} designs selected · ₹${sub.avg.toLocaleString()} avg price</div>
+          </div>
+        </div>
+        <div class="sub-pills">
+          <span class="sub-pill pill-green">${sub.top} Top Trend</span>
+          <span class="sub-pill pill-blue">${sub.insta} Insta Fit</span>
+          <span class="sub-pill pill-gold">${sub.topFab} Most</span>
+          <span class="sub-pill pill-rose">₹${sub.avg.toLocaleString()} avg</span>
+        </div>
+      </div>
+
+      <div class="sub-charts">
+        <!-- Chart 1: Fabric -->
+        <div class="sub-chart-cell">
+          <div class="scc-title">Fabric Mix</div>
+          <div class="mini-bar-chart">
+            ${fabData.map(d=>`
+              <div class="mb-row">
+                <div class="mb-lbl" title="${d.l}">${d.l}</div>
+                <div class="mb-track"><div class="mb-fill" style="width:${(d.v/maxFab*100)}%;background:${FC[d.l]}"><span>${d.v}</span></div></div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Chart 2: Trend -->
+        <div class="sub-chart-cell">
+          <div class="scc-title">Trend Score</div>
+          <div class="mini-bar-chart">
+            ${trendData.map(d=>`
+              <div class="mb-row">
+                <div class="mb-lbl">${d.l}</div>
+                <div class="mb-track"><div class="mb-fill" style="width:${(d.v/maxTrend*100)}%;background:${d.c}"><span>${d.v}</span></div></div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Chart 3: Channel Donut -->
+        <div class="sub-chart-cell">
+          <div class="scc-title">Channel Fit</div>
+          <div class="mini-donut-wrap">
+            ${miniDonut(chanSegs,donutTot)}
+            <div class="mini-legend">
+              ${chanSegs.map(s=>`<div class="ml-row"><div class="ml-dot" style="background:${s.c}"></div><div class="ml-lbl">${s.l}</div><div class="ml-val">${s.v}</div></div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 4: Price -->
+        <div class="sub-chart-cell">
+          <div class="scc-title">Price Points</div>
+          <div class="mini-bar-chart">
+            ${brackets.map(d=>`
+              <div class="mb-row">
+                <div class="mb-lbl">${d.l}</div>
+                <div class="mb-track"><div class="mb-fill" style="width:${(d.v/maxBracket*100)}%;background:#3a5ca8"><span>${d.v}</span></div></div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-items-preview" id="sub-items-${sub.id}">
+        ${sub.items.slice(0,8).map(s=>`<span class="sub-item-tag">#${s.id} ${s.design.substring(0,18)}…</span>`).join('')}
+        ${sub.items.length>8?`<button class="sub-toggle" onclick="toggleSubItems(${sub.id},${sub.items.length})">+${sub.items.length-8} more</button>`:''}
+      </div>`;
+
+    list.appendChild(card);
+  });
+}
+
+let expandedSubs={};
+function toggleSubItems(subId,total){
+  const sub=submissions.find(s=>s.id===subId);
+  if(!sub) return;
+  const div=document.getElementById('sub-items-'+subId);
+  if(expandedSubs[subId]){
+    expandedSubs[subId]=false;
+    div.innerHTML=sub.items.slice(0,8).map(s=>`<span class="sub-item-tag">#${s.id} ${s.design.substring(0,18)}…</span>`).join('')+`<button class="sub-toggle" onclick="toggleSubItems(${subId},${total})">+${total-8} more</button>`;
+  } else {
+    expandedSubs[subId]=true;
+    div.innerHTML=sub.items.map(s=>`<span class="sub-item-tag">#${s.id} ${s.design.substring(0,20)}…</span>`).join('')+`<button class="sub-toggle" onclick="toggleSubItems(${subId},${total})">Show less</button>`;
+  }
+}
+
+function miniDonut(segs,tot){
+  const r=28,cx=32,cy=32,sw=10,circ=2*Math.PI*r;
+  let off=0,paths='';
+  segs.forEach(s=>{
+    const d=(tot>0?s.v/tot:0)*circ;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${sw}" stroke-dasharray="${d} ${circ}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    off+=d;
+  });
+  return `<svg width="64" height="64" viewBox="0 0 64 64">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#f2ede4" stroke-width="${sw}"/>
+    ${paths}
+    <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#1c1814" font-family="Cormorant Garamond,serif">${tot}</text>
+  </svg>`;
+}
+
+function clearSubmissions(){
+  if(!submissions.length) return;
+  if(!confirm('Clear all submission history?')) return;
+  submissions=[];
+  document.getElementById('sub-count-badge').textContent='0 submissions';
+  document.getElementById('ex-subs').textContent='0';
+  renderSubmissionsPanel();
+}
+
+// ======================== MODAL ========================
+function closeModal(tab){
+  document.getElementById('modal-overlay').classList.remove('show');
+  if(tab){
+    const btn=document.querySelector(`.nav-tab:nth-child(${tab==='submissions'?2:1})`);
+    goTab(tab,btn);
+  }
+}
+
+function spawnConfetti(){
+  const colors=['#c8913a','#4a9460','#3a8a82','#7a5ca8','#c95c5c','#3a5ca8','#f0d9a8'];
+  const card=document.getElementById('modal-card');
+  for(let i=0;i<32;i++){
+    const d=document.createElement('div');
+    d.className='confetti-dot';
+    d.style.cssText=`left:${5+Math.random()*90}%;top:${Math.random()*15}%;background:${colors[i%colors.length]};width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;animation-delay:${Math.random()*.5}s;animation-duration:${.8+Math.random()*.9}s;border-radius:${Math.random()>.5?'50%':'3px'}`;
+    card.appendChild(d);
+    setTimeout(()=>d.remove(),1900);
+  }
+}
+
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal(null);});
+
+// ======================== FILTER ========================
+function buildFilterSidebar(){
+  const fabs=[...new Set(DATA.map(s=>s.fabric))];
+  document.getElementById('fp-fabric').innerHTML=fabs.map(f=>`<label class="fp-opt"><input type="checkbox" value="${f}" onchange="renderFP()"><span class="fp-opt-lbl">${f}</span><span class="fp-opt-cnt">${DATA.filter(s=>s.fabric===f).length}</span></label>`).join('');
+  document.getElementById('fp-trend').innerHTML=['Top Trend','Good','Niche'].map(t=>`<label class="fp-opt"><input type="checkbox" value="${t}" onchange="renderFP()"><span class="fp-opt-lbl">${t}</span><span class="fp-opt-cnt">${DATA.filter(s=>s.trend===t).length}</span></label>`).join('');
+  document.getElementById('fp-chan').innerHTML=['Insta DM','WhatsApp','Both'].map(c=>`<label class="fp-opt"><input type="checkbox" value="${c}" onchange="renderFP()"><span class="fp-opt-lbl">${c}</span><span class="fp-opt-cnt">${DATA.filter(s=>s.channel===c).length}</span></label>`).join('');
+  const pr=[['Under ₹1,100',s=>s.price<1100],['₹1,100–₹1,249',s=>s.price>=1100&&s.price<=1249],['₹1,250–₹1,399',s=>s.price>=1250&&s.price<=1399],['₹1,400+',s=>s.price>=1400]];
+  document.getElementById('fp-price').innerHTML=pr.map(([l,fn],i)=>`<label class="fp-opt"><input type="checkbox" value="${i}" onchange="renderFP()" data-pidx="${i}"><span class="fp-opt-lbl">${l}</span><span class="fp-opt-cnt">${DATA.filter(fn).length}</span></label>`).join('');
+  renderFP();
+}
+const PBRACKETS=[s=>s.price<1100,s=>s.price>=1100&&s.price<=1249,s=>s.price>=1250&&s.price<=1399,s=>s.price>=1400];
+function renderFP(){
+  const fabC=[...document.querySelectorAll('#fp-fabric input:checked')].map(i=>i.value);
+  const trC=[...document.querySelectorAll('#fp-trend input:checked')].map(i=>i.value);
+  const chC=[...document.querySelectorAll('#fp-chan input:checked')].map(i=>i.value);
+  const prC=[...document.querySelectorAll('#fp-price input:checked')].map(i=>parseInt(i.value));
+  let f=DATA;
+  if(fabC.length)f=f.filter(s=>fabC.includes(s.fabric));
+  if(trC.length)f=f.filter(s=>trC.includes(s.trend));
+  if(chC.length)f=f.filter(s=>chC.includes(s.channel));
+  if(prC.length)f=f.filter(s=>prC.some(i=>PBRACKETS[i](s)));
+  document.getElementById('fp-count').textContent=`Showing ${f.length} of 42`;
+  const tb=t=>`<span class="badge ${t==='Top Trend'?'b-top':t==='Good'?'b-good':'b-niche'}">${t}</span>`;
+  const cb=c=>`<span class="badge ${c==='Insta DM'?'b-insta':c==='WhatsApp'?'b-wa':'b-both'}">${c}</span>`;
+  document.getElementById('fp-tbody').innerHTML=f.length
+    ?f.map(s=>`<tr><td>${s.id}</td><td><strong style="color:${FC[s.fabric]}">${s.fabric}</strong></td><td>${s.design}</td><td><strong>₹${s.price.toLocaleString()}</strong></td><td>${tb(s.trend)}</td><td>${cb(s.channel)}</td><td style="font-size:11px;color:var(--ink3);max-width:140px">${s.note}</td></tr>`).join('')
+    :`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--ink3)">No items match.</td></tr>`;
+}
+function clearFilters(){document.querySelectorAll('#panel-filter input[type=checkbox]').forEach(i=>i.checked=false);renderFP();}
+
+// ======================== EXPORT ========================
+function updateExportPanel(sel){
+  sel=sel||(checked.size>0?DATA.filter(s=>checked.has(s.id)):DATA);
+  document.getElementById('ex-sel').textContent=checked.size;
+  const avg=sel.length?Math.round(sel.reduce((a,s)=>a+s.price,0)/sel.length):0;
+  document.getElementById('ex-avg').textContent=sel.length?`₹${avg.toLocaleString()}`:'—';
+  const fc={};sel.forEach(s=>fc[s.fabric]=(fc[s.fabric]||0)+1);
+  const tf=Object.entries(fc).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('ex-fab').textContent=tf?`${tf[0]} (${tf[1]})`:'—';
+  document.getElementById('ex-insta').textContent=sel.filter(s=>s.channel==='Insta DM'||s.channel==='Both').length;
+  document.getElementById('ex-wa').textContent=sel.filter(s=>s.channel==='WhatsApp'||s.channel==='Both').length;
+}
+function exportCSV(){
+  const h=['S.No','Fabric','Design','Style','Colour','Price','Trend','Channel','Note'];
+  const rows=DATA.map(s=>[s.id,`"${s.fabric}"`,`"${s.design}"`,`"${s.style}"`,`"${s.colour}"`,s.price,s.trend,s.channel,`"${s.note}"`]);
+  dl('saree_catalogue.csv',[h,...rows].map(r=>r.join(',')).join('\n'),'text/csv');
+}
+function exportJSON(){dl('saree_catalogue.json',JSON.stringify(DATA,null,2),'application/json');}
+function exportSelected(){
+  if(!checked.size){alert('No items selected!');return;}
+  const h=['S.No','Fabric','Design','Style','Colour','Price','Trend','Channel','Note'];
+  const rows=DATA.filter(s=>checked.has(s.id)).map(s=>[s.id,`"${s.fabric}"`,`"${s.design}"`,`"${s.style}"`,`"${s.colour}"`,s.price,s.trend,s.channel,`"${s.note}"`]);
+  dl('saree_selected.csv',[h,...rows].map(r=>r.join(',')).join('\n'),'text/csv');
+}
+function dl(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
+
+// ======================== NAV ========================
+function goTab(name,btn){
+  document.querySelectorAll('.dpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  else document.querySelectorAll('.nav-tab').forEach(t=>{if(t.textContent.toLowerCase().includes(name.slice(0,4)))t.classList.add('active');});
+  if(name==='filter')buildFilterSidebar();
+  if(name==='submissions')renderSubmissionsPanel();
+  if(name==='export')updateExportPanel();
+}
+
+// ======================== INIT ========================
+buildLeft();
+refreshOverview();
+renderSubmissionsPanel();
+</script>
+
+</body>
+</html>
